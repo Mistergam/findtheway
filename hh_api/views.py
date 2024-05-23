@@ -1,4 +1,4 @@
-import json
+# import json
 from collections import Counter
 
 import nltk
@@ -88,7 +88,7 @@ def search_vacancies(request):
 
     search_url = 'https://api.hh.ru/vacancies'
     per_page = 50
-    max_pages = 1000 // per_page
+    max_pages = 100 // per_page
     delay_between_requests = 0.1
 
     params = {
@@ -105,8 +105,8 @@ def search_vacancies(request):
         response = requests.get(search_url, params=params)
         if response.status_code == 200:
             data = response.json()
-            with open('json_file' + str(page) + '.json', 'w', encoding='utf8') as file:
-                json.dump(data, file, ensure_ascii=False, indent=3)
+            # with open('json_file' + str(page) + '.json', 'w', encoding='utf8') as file:
+            #     json.dump(data, file, ensure_ascii=False, indent=3)
             vacancies.extend(data['items'])
             if len(data['items']) < per_page:
                 break
@@ -118,11 +118,13 @@ def search_vacancies(request):
     # Collecting data for analysis
     requirements = []
     responsibilities = []
+    professional_roles = set()
 
     for vacancy in vacancies:
         if 'snippet' in vacancy:
             requirements.append(vacancy['snippet'].get('requirement', '') or '')
             responsibilities.append(vacancy['snippet'].get('responsibility', '') or '')
+            professional_roles.add(vacancy['professional_roles'][0].get('name', '') or '')
 
     requirements_clean = [x.replace('highlighttext', '') for x in requirements]
     responsibilities_clean = [x.replace('highlighttext', '') for x in responsibilities]
