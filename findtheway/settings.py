@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!^ma6%+1f23b7s47t(rioz92)e^a+^0&@j1(hovfl4ek6olcn+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['findtheway.ru', 'www.findtheway.ru']
 
 
 # Application definition
@@ -55,7 +55,7 @@ ROOT_URLCONF = 'findtheway.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['/var/www/u2659238/data/www/findtheway.ru/findtheway/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,3 +128,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 HH_CLIENT_ID = 'my_client_id'
 HH_REDIRECT_URI = 'hh-your_client_id://oauth_callback'
+
+STATIC_ROOT = 'static/'
+MEDIA_ROOT = '/media/'
+

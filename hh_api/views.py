@@ -1,5 +1,5 @@
 # import json
-from collections import Counter
+from collections import Counter, OrderedDict
 
 import nltk
 from django.shortcuts import render, redirect
@@ -114,25 +114,32 @@ def search_vacancies(request):
             error_message = response.json().get('description', 'Failed to retrieve data')
             return JsonResponse({'error': 'Failed to retrieve data'}, status=response.status_code)
         time.sleep(delay_between_requests)
+    vacancies.sort(key=lambda dic: dic['name'])
 
     # Collecting data for analysis
     requirements = []
     responsibilities = []
-    professional_roles = set()
+    roles = []
 
     for vacancy in vacancies:
         if 'snippet' in vacancy:
             requirements.append(vacancy['snippet'].get('requirement', '') or '')
             responsibilities.append(vacancy['snippet'].get('responsibility', '') or '')
-            professional_roles.add(vacancy['professional_roles'][0].get('name', '') or '')
+        if 'professional_roles' in vacancy:
+            for role in vacancy['professional_roles']:
+                roles.append(role['name'])
 
     requirements_clean = [x.replace('highlighttext', '') for x in requirements]
     responsibilities_clean = [x.replace('highlighttext', '') for x in responsibilities]
     common_requirements = analyze_text(requirements_clean)
     common_responsibilities = analyze_text(responsibilities_clean)
 
+    roles_counter = Counter(roles)
+    professional_roles = OrderedDict(sorted(roles_counter.items(), key=lambda item: item[1], reverse=True))
+
     context = {
         'vacancies': vacancies,
+        'professional_roles': professional_roles,
         'common_requirements': common_requirements,
         'common_responsibilities': common_responsibilities
     }
