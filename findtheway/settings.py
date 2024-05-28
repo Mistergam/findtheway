@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import socket
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,8 +25,10 @@ SECRET_KEY = 'django-insecure-!^ma6%+1f23b7s47t(rioz92)e^a+^0&@j1(hovfl4ek6olcn+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['findtheway.ru', 'www.findtheway.ru']
-
+if socket.gethostname() == 'findtheway.ru':
+    ALLOWED_HOSTS = ['findtheway.ru', 'www.findtheway.ru']
+else:
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 

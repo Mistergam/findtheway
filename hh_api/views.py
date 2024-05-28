@@ -105,6 +105,7 @@ def search_vacancies(request):
         response = requests.get(search_url, params=params)
         if response.status_code == 200:
             data = response.json()
+            # this is used to load example of json from hh.api if needed to view actual structure
             # with open('json_file' + str(page) + '.json', 'w', encoding='utf8') as file:
             #     json.dump(data, file, ensure_ascii=False, indent=3)
             vacancies.extend(data['items'])
