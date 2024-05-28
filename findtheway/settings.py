@@ -25,11 +25,14 @@ SECRET_KEY = 'django-insecure-!^ma6%+1f23b7s47t(rioz92)e^a+^0&@j1(hovfl4ek6olcn+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+ALLOWED_HOSTS = ['findtheway.ru', 'www.findtheway.ru']
+
+'''
 if socket.gethostname() == 'findtheway.ru':
     ALLOWED_HOSTS = ['findtheway.ru', 'www.findtheway.ru']
 else:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
+'''
 # Application definition
 
 INSTALLED_APPS = [
@@ -57,7 +60,7 @@ ROOT_URLCONF = 'findtheway.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/var/www/u2659238/data/www/findtheway.ru/findtheway/templates'],
+        'DIRS': ['/var/www/u2659238/data/www/findtheway.ru/findtheway/hh_api/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
