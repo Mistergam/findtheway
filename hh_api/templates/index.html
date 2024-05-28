@@ -7,10 +7,14 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <h1>Text for search</h1>
-    <form method="get" action="{% url 'search_vacancies' %}">
-        <input type="text" name="text" placeholder="Enter job title or keyword" required>
-        <button type="submit">Search</button>
-    </form>
+    <div class="container">
+        <div class="form-container">
+                <h1>Введите ваш запрос</h1>
+                <form method="get" action="{% url 'search_vacancies' %}">
+                    <input type="text" name="text" placeholder="Enter job title or keyword" required>
+                    <button type="submit">Search</button>
+                </form>
+        </div>
+    </div>
 </body>
 </html>

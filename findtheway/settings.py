@@ -57,7 +57,7 @@ ROOT_URLCONF = 'findtheway.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/var/www/u2659238/data/www/findtheway.ru/findtheway/templates'],
+        'DIRS': ['/var/www/u2659238/data/www/findtheway.ru/findtheway/hh_api/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
