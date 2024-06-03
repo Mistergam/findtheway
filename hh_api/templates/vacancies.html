@@ -1,32 +1,18 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Job Vacancies</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #99af96;
-        }
-    </style>
-</head>
-<body>
-    <h1>Профиль роли</h1>
+{% extends 'base.html' %}
+
+{% block title %}
+Find The Way
+{% endblock %}
+
+{% block content %}
+    <h1>Результаты анализа вакансий</h1>
+    <p><b>Найдено {{ vacancies_found }} / Отфильтрованных по ролям: {{ filtered_vacancies }}</b></p>
+    <hr>
     <form method="get" action="{% url 'search_vacancies' %}">
         <input type="text" name="text" placeholder="Enter job title or keyword" value="{{ request.GET.text }}">
-        <button type="submit">Search</button>
+        <button type="submit" class="btn btn-success">Search</button>
     </form>
-
+    <hr class="border border-primary border-3 opacity-75">
     {% if error_message %}
     <div class="error">
         <p>{{ error_message }}</p>
@@ -34,7 +20,7 @@
     {% endif %}
 
     <h2>Основные требования к роли</h2>
-    <table border="1">
+    <table>
         <tr>
             <td>
                 <h3>Words</h3>
@@ -101,9 +87,8 @@
 
     <h2>Список найденных вакансий</h2>
     <ul>
-        {% for vacancy in vacancies %}
-            <li>{{ vacancy.name }}</li>
+        {% for name, count in output_vacancies.items %}
+            <li>{{ name }}: {{ count }}</li>
         {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}
