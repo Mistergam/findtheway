@@ -5,10 +5,12 @@ Find The Way
 {% endblock %}
 
 {% block content %}
+<div class="container text-center">
     <h1>Результаты анализа вакансий</h1>
     <p><b>Найдено {{ vacancies_found }} / Отфильтрованных по ролям: {{ filtered_vacancies }}</b></p>
     <hr>
     <form method="get" action="{% url 'search_vacancies' %}">
+        Новый поиск:
         <input type="text" name="text" placeholder="Enter job title or keyword" value="{{ request.GET.text }}">
         <button type="submit" class="btn btn-success">Search</button>
     </form>
@@ -20,7 +22,7 @@ Find The Way
     {% endif %}
 
     <h2>Основные требования к роли</h2>
-    <table>
+    <table class="table">
         <tr>
             <td>
                 <h3>Words</h3>
@@ -48,8 +50,11 @@ Find The Way
             </td>
         </tr>
     </table>
+
+
+
     <h2>Основные функции роли</h2>
-    <table>
+    <table class="table">
         <tr>
             <td>
                 <h3>Words</h3>
@@ -77,7 +82,7 @@ Find The Way
             </td>
         </tr>
     </table>
-    
+
     <h2>Типичные наименования</h2>
     <ul>
         {% for role, count in professional_roles.items %}
@@ -85,10 +90,11 @@ Find The Way
         {% endfor %}
     </ul>
 
-    <h2>Список найденных вакансий</h2>
-    <ul>
-        {% for name, count in output_vacancies.items %}
-            <li>{{ name }}: {{ count }}</li>
-        {% endfor %}
-    </ul>
+<!--    <h2>Список найденных вакансий</h2>-->
+<!--    <ul>-->
+<!--        {% for name, count in output_vacancies.items %}-->
+<!--            <li>{{ name }}: {{ count }}</li>-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
+</div>
 {% endblock %}

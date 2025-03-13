@@ -11,6 +11,12 @@ from nltk.corpus import stopwords
 
 from .utils import filter_vacancies_by_keywords
 
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from itertools import chain
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+
 nltk.download('punkt')
 nltk.download('stopwords')
 
@@ -88,7 +94,7 @@ def search_vacancies(request):
 
     search_url = 'https://api.hh.ru/vacancies'
     per_page = 50
-    max_pages = 1000 // per_page
+    max_pages = 100 // per_page
     delay_between_requests = 0.1
 
     # Задаем параметры поиска
