@@ -9,6 +9,8 @@ Find The Way
 
 <div class="container text-center">
     <h1>Введите ваш запрос</h1>
+    <p>Введите свой интерес или ключевую хардовую компетенцию и получите карьерный путь на основе реальных актуальных вакансий.
+Описания позиций и компетенций представлены из вакансий, а не из опыта одного человека</p>
     <form method="get" action="{% url 'search_vacancies' %}">
         <input type="text" name="text" placeholder="Enter job title or keyword" required>
         <button type="submit" class="btn btn-success">Search</button>

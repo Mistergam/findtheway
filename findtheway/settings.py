@@ -45,6 +45,16 @@ INSTALLED_APPS = [
     'hh_api',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Для стандартной регистрации
+    'social_core.backends.vk.VKOAuth2',  # Для VK ID
+    'social_core.backends.yandex.YandexOAuth2',  # Для Yandex ID
+]
+
+LOGIN_URL = 'login'  # URL для авторизации
+LOGIN_REDIRECT_URL = '/'  # Куда перенаправлять после входа
+LOGOUT_REDIRECT_URL = '/'  # Куда перенаправлять после выхода
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
