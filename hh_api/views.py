@@ -13,9 +13,7 @@ from .utils import filter_vacancies_by_keywords
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from itertools import chain
-from sklearn.feature_extraction.text import TfidfVectorizer
-import numpy as np
+
 
 nltk.download('punkt')
 nltk.download('stopwords')
