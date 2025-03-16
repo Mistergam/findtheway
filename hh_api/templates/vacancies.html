@@ -23,6 +23,12 @@ Find The Way
         </div>
         {% endif %}
     </div>
+    <h2>Типичные наименования</h2>
+    <ul>
+        {% for role, count in professional_roles.items %}
+            <li>{{ role }}: {{ count }}</li>
+        {% endfor %}
+    </ul>
     <h2>Основные требования к роли</h2>
     <div class="row">
         <div class="col-md-4">
@@ -79,12 +85,6 @@ Find The Way
         </div>
     </div>
 
-    <h2>Типичные наименования</h2>
-    <ul>
-        {% for role, count in professional_roles.items %}
-            <li>{{ role }}: {{ count }}</li>
-        {% endfor %}
-    </ul>
 
 <!--    <h2>Список найденных вакансий</h2>-->
 <!--    <ul>-->
