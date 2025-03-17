@@ -92,7 +92,7 @@ def search_vacancies(request):
 
     search_url = 'https://api.hh.ru/vacancies'
     per_page = 50
-    max_pages = 5000 // per_page
+    max_pages = 1500 // per_page
     delay_between_requests = 0.1
 
     # Задаем параметры поиска
