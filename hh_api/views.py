@@ -91,7 +91,7 @@ def search_vacancies(request):
     search_text = request.GET.get('text', '')
 
     search_url = 'https://api.hh.ru/vacancies'
-    per_page = 50
+    per_page = 100
     max_pages = 1500 // per_page
     delay_between_requests = 0.1
 
@@ -130,7 +130,10 @@ def search_vacancies(request):
     # в общем списке - если доля больше 2%, то роль используется)
     roles = [role['name'] for vacancy in vacancies for role in vacancy['professional_roles']]
     # roles_counter = Counter(roles)
-    professional_roles = {role: count for role, count in Counter(roles).items() if count > len(vacancies) // 50}
+    professional_roles = {
+        role: count
+        for role, count in sorted(Counter(roles).items(), key=lambda x: x[1], reverse=True)
+        if count > len(vacancies) // 50}
 
     # Фильтруем данные о вакансиях по найденным отфильтрованным ролям.
     vacancies = list(filter(lambda x: x['professional_roles'][0]['name'] in professional_roles, vacancies))
@@ -176,11 +179,10 @@ def analyze_text(text_list):
     trigrams = []
 
     for text in text_list:
-        words = word_tokenize(text)
-        words = [word.lower() for word in words if word.isalpha()]
-        words = [word for word in words if word not in stop_words]
+        words = word_tokenize(text)  # альтернативное решение через регулярку words = re.findall(r"\b[\w'-]+\b", text)
+        words = [word.lower() for word in words if word.isalpha() and word.lower() not in stop_words]
         all_words.extend(words)
-        bigrams.extend(ngrams(words, 2))
+        bigrams.extend(ngrams(words, 2))  # альтернатива (более быстрая) без NLTK bigrams = list(zip(words, words[1:]))
         trigrams.extend(ngrams(words, 3))
 
     word_freq = Counter(all_words).most_common(10)
