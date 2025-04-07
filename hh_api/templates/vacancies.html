@@ -8,7 +8,7 @@ Find The Way
 <div class="container">
     <div class="row text-center">
         <h1>Результаты анализа вакансий</h1>
-        <p><b>Найдено {{ vacancies_found }} / Отфильтрованных по ролям: {{ filtered_vacancies }}</b></p>
+        <p><b>Всего найдено: {{ vacancies_found }} / Отфильтрованных по ролям: {{ filtered_vacancies }} / Использованных: {{ fetched }}</b></p>
         <hr>
         <form method="get" action="{% url 'search_vacancies' %}">
             <b>Новый поиск:</b>
@@ -23,7 +23,7 @@ Find The Way
         </div>
         {% endif %}
     </div>
-    <h2>Возможные категории вакансий</h2>
+    <h2>Возможные названия вашей роли</h2>
     <ul>
         {% for role, count in professional_roles.items %}
             <li>{{ role }}: {{ count }}</li>
@@ -32,26 +32,26 @@ Find The Way
     <h2>Основные требования к роли</h2>
     <div class="row">
         <div class="col-md-4">
-            <h3>Words</h3>
+            <h3>Знания</h3>
             <ul>
-                {% for word, count in common_requirements.words %}
-                    <li>{{ word }}: {{ count }}</li>
+                {% for know in knowledges %}
+                    <li>{{ know }}</li>
                 {% endfor %}
             </ul>
         </div>
         <div class="col-md-4">
-            <h3>Bigrams</h3>
+            <h3>Умения</h3>
             <ul>
-                {% for bigram, count in common_requirements.bigrams %}
-                    <li>{{ bigram.0 }} {{ bigram.1 }}: {{ count }}</li>
+                {% for skill in skills %}
+                    <li>{{ skill }}</li>
                 {% endfor %}
             </ul>
         </div>
         <div class="col-md-4">
-            <h3>Trigrams</h3>
+            <h3>Владение</h3>
             <ul>
-                {% for trigram, count in common_requirements.trigrams %}
-                    <li>{{ trigram.0 }} {{ trigram.1 }} {{ trigram.2 }}: {{ count }}</li>
+                {% for can in cans %}
+                    <li>{{ can }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -62,33 +62,23 @@ Find The Way
         <div class="col-md-4">
             <h3>Words</h3>
             <ul>
-                {% for word, count in common_responsibilities.words %}
-                    <li>{{ word }}: {{ count }}</li>
+                {% for duty in duties %}
+                    <li>{{ duty }}</li>
                 {% endfor %}
             </ul>
         </div>
         <div class="col-md-4">
             <h3>Bigrams</h3>
             <ul>
-                {% for bigram, count in common_responsibilities.bigrams %}
-                    <li>{{ bigram.0 }} {{ bigram.1 }}: {{ count }}</li>
-                {% endfor %}
+
             </ul>
         </div>
         <div class="col-md-4">
             <h3>Trigrams</h3>
             <ul>
-                {% for trigram, count in common_responsibilities.trigrams %}
-                    <li>{{ trigram.0 }} {{ trigram.1 }} {{ trigram.2 }}: {{ count }}</li>
-                {% endfor %}
+
             </ul>
         </div>
     </div>
-<!--    <h2>Список найденных вакансий</h2>-->
-<!--    <ul>-->
-<!--        {% for name, count in output_vacancies.items %}-->
-<!--            <li>{{ name }}: {{ count }}</li>-->
-<!--        {% endfor %}-->
-<!--    </ul>-->
 </div>
 {% endblock %}

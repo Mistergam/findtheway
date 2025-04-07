@@ -1,23 +1,9 @@
-# import json
-from collections import Counter, defaultdict
-
-import nltk
-# import urllib.parse
-import requests
 from django.http import JsonResponse
 from django.shortcuts import render
-from nltk import word_tokenize, ngrams
-from nltk.corpus import stopwords
+import json
 
-from .utils import filter_vacancies_by_keywords
-
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-
-
-nltk.download('punkt')
-nltk.download('stopwords')
-
+from .services.hh_api import load_vacancies, fetch_vacancy_text
+from .analyzers.skills_analyzer import categorize_requirements, remove_duplicates
 
 def index(request):
     return render(request, 'index.html')
@@ -89,117 +75,27 @@ def index(request):
 
 def search_vacancies(request):
     search_text = request.GET.get('text', '')
+    try:
+        vacancies = load_vacancies(search_text, per_page=50, max_pages=2)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-    search_url = 'https://api.hh.ru/vacancies'
-    per_page = 100
-    max_pages = 1500 // per_page
-    delay_between_requests = 0.1
+    raw_data = fetch_vacancy_text(vacancies[0])
+    reqs = raw_data["Требования"]
+    duties = raw_data["Обязанности"]
+    fetched_vacancies_count = raw_data["Обработанные вакансии"]
 
-    # Задаем параметры поиска
-    params = {
-        'text': search_text,
-        'per_page': per_page,
-        'area': 1,
-        'page': 0,
-    }
-
-    vacancies = []
-
-    # собираем данные в переменную vacancies
-    for page in range(max_pages):
-        params['page'] = page
-        response = requests.get(search_url, params=params)
-        if response.status_code == 200:
-            data = response.json()
-            # this is used to load example of json from hh.api if needed to view actual structure
-            # with open('json_file' + str(page) + '.json', 'w', encoding='utf8') as file:
-            #     json.dump(data, file, ensure_ascii=False, indent=3)
-            vacancies.extend(data['items'])
-            if len(data['items']) < per_page:
-                break
-        else:
-            error_message = response.json().get('description', 'Failed to retrieve data')
-            return JsonResponse({'error': 'Failed to retrieve data'}, status=response.status_code)
-        # time.sleep(delay_between_requests)
-    vacancies_found = len(vacancies)
-
-    # Сортируем данные по имени вакансии для выдачи на страницу в лексикографическом порядке
-    vacancies.sort(key=lambda dic: dic['name'])
-
-    # Выбираем роли из данных для использования в качестве фильтра (пока в качестве фильтра используется доля роли
-    # в общем списке - если доля больше 2%, то роль используется)
-    roles = [role['name'] for vacancy in vacancies for role in vacancy['professional_roles']]
-    # roles_counter = Counter(roles)
-    professional_roles = {
-        role: count
-        for role, count in sorted(Counter(roles).items(), key=lambda x: x[1], reverse=True)
-        if count > len(vacancies) // 50}
-
-    # Фильтруем данные о вакансиях по найденным отфильтрованным ролям.
-    vacancies = list(filter(lambda x: x['professional_roles'][0]['name'] in professional_roles, vacancies))
-    filtered_vacancies = len(vacancies)
-
-    # Из общих данных отдельно для обработки формируем списки для анализа
-    requirements = []
-    responsibilities = []
-    output_vacancies = defaultdict(int)
-
-    for vacancy in vacancies:
-
-        if 'snippet' in vacancy:
-            requirements.append(vacancy['snippet'].get('requirement', '') or '')
-            responsibilities.append(vacancy['snippet'].get('responsibility', '') or '')
-        output_vacancies[vacancy['name']] += 1
-
-    requirements_clean = [x.replace('highlighttext', '') for x in requirements]
-    responsibilities_clean = [x.replace('highlighttext', '') for x in responsibilities]
-    output_vacancies = dict(sorted(output_vacancies.items(), key=lambda item: item[1], reverse=True))
-
-    # Анализируем текст
-    common_requirements = analyze_text(requirements_clean)
-    common_responsibilities = analyze_text(responsibilities_clean)
+    categorized_requirements = categorize_requirements(reqs)
 
     context = {
-        'vacancies': vacancies,
-        'professional_roles': professional_roles,
-        'common_requirements': common_requirements,
-        'common_responsibilities': common_responsibilities,
-        'vacancies_found': vacancies_found,
-        'filtered_vacancies': filtered_vacancies,
-        'output_vacancies': output_vacancies,
+        'professional_roles': vacancies[3],
+        'vacancies_found': vacancies[1],
+        'filtered_vacancies': vacancies[2],
+        'knowledges': categorized_requirements["Знания"],
+        'skills': categorized_requirements["Умения"],
+        'cans': categorized_requirements["Владение"],
+        'duties': duties,
+        'fetched': fetched_vacancies_count
     }
 
     return render(request, 'vacancies.html', context)
-
-
-def analyze_text(text_list):
-    stop_words = set(stopwords.words('russian'))
-    all_words = []
-    bigrams = []
-    trigrams = []
-
-    for text in text_list:
-        words = word_tokenize(text)  # альтернативное решение через регулярку words = re.findall(r"\b[\w'-]+\b", text)
-        words = [word.lower() for word in words if word.isalpha() and word.lower() not in stop_words]
-        all_words.extend(words)
-        bigrams.extend(ngrams(words, 2))  # альтернатива (более быстрая) без NLTK bigrams = list(zip(words, words[1:]))
-        trigrams.extend(ngrams(words, 3))
-
-    word_freq = Counter(all_words).most_common(10)
-    bigram_freq = Counter(bigrams).most_common(10)
-    trigram_freq = Counter(trigrams).most_common(10)
-
-    return {
-        'words': word_freq,
-        'bigrams': bigram_freq,
-        'trigrams': trigram_freq
-    }
-
-
-def search_filtered_vacancies(request):
-    query = request.GET.get('query', '')
-    if query:
-        vacancies = filter_vacancies_by_keywords(query)
-    else:
-        vacancies = []
-    return render(request, 'search_results.html', {'vacancies': vacancies, 'query': query})
