@@ -80,12 +80,17 @@ def search_vacancies(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-    raw_data = fetch_vacancy_text(vacancies[0])
+    vacancies_items = vacancies[0]
+    raw_data = fetch_vacancy_text(vacancies_items)
     reqs = raw_data["Требования"]
     duties = raw_data["Обязанности"]
     fetched_vacancies_count = raw_data["Обработанные вакансии"]
 
     categorized_requirements = categorize_requirements(reqs)
+    vacancies_list_with_url = {
+        item["name"]: item["alternate_url"]
+        for item in vacancies_items
+    }
 
     context = {
         'professional_roles': vacancies[3],
@@ -95,7 +100,8 @@ def search_vacancies(request):
         'skills': categorized_requirements["Умения"],
         'cans': categorized_requirements["Владение"],
         'duties': duties,
-        'fetched': fetched_vacancies_count
+        'fetched': fetched_vacancies_count,
+        'vacancies': vacancies_list_with_url
     }
 
     return render(request, 'vacancies.html', context)

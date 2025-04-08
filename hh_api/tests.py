@@ -1,46 +1,33 @@
-from django.test import TestCase
-from .models import JobVacancy, ProfessionalRole
-from .utils import filter_vacancies_by_keywords
+import os
+import django
+
+# Указываем настройки Django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "findtheway.settings")
+django.setup()
+
+from hh_api.services.hh_api import load_vacancies, fetch_vacancy_text
+from hh_api.analyzers.skills_analyzer import categorize_requirements
 
 
-class JobVacancyTestCase(TestCase):
+def test_vacancies_list():
+    search_text = "Python"
+    vacancies = load_vacancies(search_text, per_page=50, max_pages=2)
+    print(vacancies[0])
+    raw_data = fetch_vacancy_text(vacancies[0])
+    reqs = raw_data["Требования"]
+    duties = raw_data["Обязанности"]
+    fetched_vacancies_count = raw_data["Обработанные вакансии"]
 
-    def setUp(self):
-        # Создаем профессиональные роли и вакансии для тестирования
-        developer_role = ProfessionalRole.objects.create(name="Developer", keywords="python, django, programming")
-        designer_role = ProfessionalRole.objects.create(name="Designer", keywords="photoshop, design, creative")
+    categorized_requirements = categorize_requirements(reqs)
 
-        JobVacancy.objects.create(title="Python Developer", description="Develop web applications using Django.", professional_role=developer_role)
-        JobVacancy.objects.create(title="Web Designer", description="Design user interfaces and experiences.", professional_role=designer_role)
+    vacancies_list = {
+        item["name"]: item["alternate_url"]
+        for item in vacancies[0]
+    }
 
-    def test_filter_vacancies_by_keywords(self):
-        # Тестируем фильтрацию вакансий по ключевым словам
+    print("vacancies_list:")
+    for name, url in vacancies_list.items():
+        print(f"{name} -> {url}")
 
-        # Тестируем ключевое слово "python"
-        query = "python"
-        filtered_vacancies = filter_vacancies_by_keywords(query)
-        self.assertEqual(len(filtered_vacancies), 1)
-        self.assertEqual(filtered_vacancies[0].title, "Python Developer")
-
-        # Тестируем ключевое слово "design"
-        query = "design"
-        filtered_vacancies = filter_vacancies_by_keywords(query)
-        self.assertEqual(len(filtered_vacancies), 1)
-        self.assertEqual(filtered_vacancies[0].title, "Web Designer")
-
-        # Тестируем ключевое слово "creative"
-        query = "creative"
-        filtered_vacancies = filter_vacancies_by_keywords(query)
-        self.assertEqual(len(filtered_vacancies), 1)
-        self.assertEqual(filtered_vacancies[0].title, "Web Designer")
-
-        # Тестируем ключевое слово "django"
-        query = "django"
-        filtered_vacancies = filter_vacancies_by_keywords(query)
-        self.assertEqual(len(filtered_vacancies), 1)
-        self.assertEqual(filtered_vacancies[0].title, "Python Developer")
-
-        # Тестируем ключевое слово, которое не соответствует ни одной вакансии
-        query = "java"
-        filtered_vacancies = filter_vacancies_by_keywords(query)
-        self.assertEqual(len(filtered_vacancies), 0)
+if __name__ == "__main__":
+    test_vacancies_list()

@@ -57,10 +57,10 @@ Find The Way
         </div>
     </div>
 
-    <h2>Основные функции роли</h2>
+    <h2>Вакансии и функционал</h2>
     <div class="row">
         <div class="col-md-4">
-            <h3>Words</h3>
+            <h3>Обязанности</h3>
             <ul>
                 {% for duty in duties %}
                     <li>{{ duty }}</li>
@@ -68,15 +68,11 @@ Find The Way
             </ul>
         </div>
         <div class="col-md-4">
-            <h3>Bigrams</h3>
+            <h3>Вакансии</h3>
             <ul>
-
-            </ul>
-        </div>
-        <div class="col-md-4">
-            <h3>Trigrams</h3>
-            <ul>
-
+                {% for name, url in vacancies %}
+                    <li><a href="{{ url }}">{{ name }}</a> </li>
+                {% endfor %}
             </ul>
         </div>
     </div>
